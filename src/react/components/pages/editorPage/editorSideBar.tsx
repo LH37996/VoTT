@@ -31,18 +31,23 @@ export interface IEditorSideBarState {
  * @name - Editor Side Bar
  * @description - Side bar for editor page
  */
-export default class EditorSideBar extends React.Component<IEditorSideBarProps, IEditorSideBarState> {
+export default class EditorSideBar extends React.Component<
+    IEditorSideBarProps,
+    IEditorSideBarState
+> {
     public state: IEditorSideBarState = {
         scrollToIndex: this.props.selectedAsset
-            ? this.props.assets.findIndex((asset) => asset.id === this.props.selectedAsset.id)
-            : 0,
+            ? this.props.assets.findIndex(
+                  asset => asset.id === this.props.selectedAsset.id
+              )
+            : 0
     };
 
     private listRef: React.RefObject<List> = React.createRef();
 
     public render() {
         return (
-            <div className="editor-page-bottombar-nav">
+            <div className="editor-page-sidebar-nav">
                 <AutoSizer>
                     {({ height, width }) => (
                         <List
@@ -71,25 +76,32 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             return;
         }
 
-        if ((!prevProps.selectedAsset && this.props.selectedAsset) ||
-            prevProps.selectedAsset.id !== this.props.selectedAsset.id) {
+        if (
+            (!prevProps.selectedAsset && this.props.selectedAsset) ||
+            prevProps.selectedAsset.id !== this.props.selectedAsset.id
+        ) {
             this.selectAsset(this.props.selectedAsset);
         }
     }
 
     private getRowHeight = (width: number) => {
         return width / (4 / 3) + 16;
-    }
+    };
 
     private selectAsset = (selectedAsset: IAsset): void => {
-        const scrollToIndex = this.props.assets.findIndex((asset) => asset.id === selectedAsset.id);
+        const scrollToIndex = this.props.assets.findIndex(
+            asset => asset.id === selectedAsset.id
+        );
 
-        this.setState({
-            scrollToIndex,
-        }, () => {
-            this.listRef.current.forceUpdateGrid();
-        });
-    }
+        this.setState(
+            {
+                scrollToIndex
+            },
+            () => {
+                this.listRef.current.forceUpdateGrid();
+            }
+        );
+    };
 
     private onAssetClicked = (asset: IAsset): void => {
         if (this.props.onBeforeAssetSelected) {
@@ -100,59 +112,71 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
         this.selectAsset(asset);
         this.props.onAssetSelected(asset);
-    }
+    };
 
     private rowRenderer = ({ key, index, style }): JSX.Element => {
         const asset = this.props.assets[index];
         const selectedAsset = this.props.selectedAsset;
 
         return (
-            <div key={key} style={style}
+            <div
+                key={key}
+                style={style}
                 className={this.getAssetCssClassNames(asset, selectedAsset)}
-                onClick={() => this.onAssetClicked(asset)}>
+                onClick={() => this.onAssetClicked(asset)}
+            >
                 <div className="asset-item-image">
                     {this.renderBadges(asset)}
                     <AssetPreview asset={asset} />
                 </div>
                 <div className="asset-item-metadata">
-                    <span className="asset-filename" title={asset.name}>{asset.name}</span>
-                    {asset.size &&
+                    <span className="asset-filename" title={asset.name}>
+                        {asset.name}
+                    </span>
+                    {asset.size && (
                         <span>
                             {asset.size.width} x {asset.size.height}
                         </span>
-                    }
+                    )}
                 </div>
             </div>
         );
-    }
+    };
 
     private renderBadges = (asset: IAsset): JSX.Element => {
         switch (asset.state) {
             case AssetState.Tagged:
                 return (
-                    <span title={strings.editorPage.tagged}
-                        className="badge badge-tagged">
-                        <i className="fas fa-tag"></i>
+                    <span
+                        title={strings.editorPage.tagged}
+                        className="badge badge-tagged"
+                    >
+                        <i className="fas fa-tag" />
                     </span>
                 );
             case AssetState.Visited:
                 return (
-                    <span title={strings.editorPage.visited}
-                        className="badge badge-visited">
-                        <i className="fas fa-eye"></i>
+                    <span
+                        title={strings.editorPage.visited}
+                        className="badge badge-visited"
+                    >
+                        <i className="fas fa-eye" />
                     </span>
                 );
             default:
                 return null;
         }
-    }
+    };
 
-    private getAssetCssClassNames = (asset: IAsset, selectedAsset: IAsset = null): string => {
+    private getAssetCssClassNames = (
+        asset: IAsset,
+        selectedAsset: IAsset = null
+    ): string => {
         const cssClasses = ["asset-item"];
         if (selectedAsset && selectedAsset.id === asset.id) {
             cssClasses.push("selected");
         }
 
         return cssClasses.join(" ");
-    }
+    };
 }
